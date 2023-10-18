@@ -1,5 +1,8 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+
+[RequireComponent(typeof(VolumeRegulator))]
 
 public class Signaling : MonoBehaviour
 {
@@ -18,22 +21,23 @@ public class Signaling : MonoBehaviour
         volumeRegulator = GetComponent<VolumeRegulator>();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerEnter2D()
     {
-        if (collision.TryGetComponent<Patrol>(out Patrol patrol))
-        {
-            _reached?.Invoke();
-
             if (_isWork == false)
             {
-                _isWork = true;
-                volumeRegulator.StartCoroutine(volumeRegulator.IncreaseVolume());
+                IEnumerator regulatingVolume = volumeRegulator.IncreaseVolume();
+                RegulateVolume(true, regulatingVolume);
             }
             else
             {
-                _isWork = false;
-                volumeRegulator.StartCoroutine(volumeRegulator.DecreaseVolume());
+                IEnumerator regulatingVolume = volumeRegulator.DecreaseVolume();
+                RegulateVolume(false, regulatingVolume);
             }
         }
+
+    private void RegulateVolume(bool isWork, IEnumerator changeVolume)
+    {
+        _isWork = isWork;
+        volumeRegulator.StartCoroutine(changeVolume);
     }
 }

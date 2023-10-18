@@ -3,16 +3,16 @@ using UnityEngine;
 
 public class VolumeRegulator : MonoBehaviour
 {
-    private AudioSource audioSource;
-    private Signaling signaling;
+    private AudioSource _audioSource;
+    private Signaling _signaling;
     private float _timeDelay;
     private float _countChangeVolume;
 
     private void Start()
     {
-        audioSource = GetComponent<AudioSource>();
-        signaling = GetComponent<Signaling>();
-        audioSource.volume = 0;
+        _audioSource = GetComponent<AudioSource>();
+        _signaling = GetComponent<Signaling>();
+        _audioSource.volume = 0;
         _timeDelay = 1;
         _countChangeVolume = 0.1f;
     }
@@ -21,14 +21,14 @@ public class VolumeRegulator : MonoBehaviour
     {
         WaitForSeconds timeDelay = new WaitForSeconds(_timeDelay);
 
-        while (audioSource.volume < 1)
+        while (_audioSource.volume < 1)
         {
-            if (signaling.GetStatusWork() == false)
+            if (_signaling.GetStatusWork() == false)
             {
                 break;
             }
 
-            audioSource.volume += _countChangeVolume;
+            _audioSource.volume += _countChangeVolume;
             yield return timeDelay;
         }
     }
@@ -37,14 +37,14 @@ public class VolumeRegulator : MonoBehaviour
     {
         WaitForSeconds timeDelay = new WaitForSeconds(_timeDelay);
 
-        while (audioSource.volume > 0)
+        while (_audioSource.volume > 0)
         {
-            if (signaling.GetStatusWork() == true)
+            if (_signaling.GetStatusWork() == true)
             {
                 break;
             }
 
-            audioSource.volume -= _countChangeVolume;
+            _audioSource.volume -= _countChangeVolume;
             yield return timeDelay;
         }
     }

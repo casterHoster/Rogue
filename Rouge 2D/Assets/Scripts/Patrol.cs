@@ -8,8 +8,7 @@ public class Patrol : MonoBehaviour
     private Transform[] _points;
     private int _currentPoint;
 
-
-    void Start()
+    private void Start()
     {
         _points = new Transform[_path.childCount];
 
@@ -19,7 +18,7 @@ public class Patrol : MonoBehaviour
         }
     }
 
-    void Update()
+   private void Update()
     {
         Transform target = _points[_currentPoint];
         transform.position = Vector3.MoveTowards(transform.position, target.position, _speed * Time.deltaTime);
