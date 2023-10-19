@@ -1,15 +1,15 @@
+using System;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class Sensor : MonoBehaviour
 {
-    [SerializeField] private UnityEvent _reached;
+    public event Action BorderIsReached;
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.TryGetComponent<Patrol>(out Patrol patrol))
+        if (collision.transform.TryGetComponent<Patrol>(out Patrol patrol))
         {
-            _reached?.Invoke();
+            BorderIsReached?.Invoke();
         }
     }
 }

@@ -6,38 +6,46 @@ using UnityEngine.Events;
 
 public class Signaling : MonoBehaviour
 {
-    [SerializeField] private UnityEvent _reached;
+    [SerializeField] private UnityEvent _playing;
+    [SerializeField] private Sensor _sensor;
 
     private bool _isWork;
-    private VolumeRegulator volumeRegulator;
+    private VolumeRegulator _volumeRegulator;
 
     public bool GetStatusWork()
     {
         return _isWork;
     }
 
-    private void Start()
+    private void Awake()
     {
-        volumeRegulator = GetComponent<VolumeRegulator>();
+        _volumeRegulator = GetComponent<VolumeRegulator>();
     }
 
-    private void OnTriggerEnter2D()
+    private void OnEnable()
     {
-            if (_isWork == false)
-            {
-                IEnumerator regulatingVolume = volumeRegulator.IncreaseVolume();
-                RegulateVolume(true, regulatingVolume);
-            }
-            else
-            {
-                IEnumerator regulatingVolume = volumeRegulator.DecreaseVolume();
-                RegulateVolume(false, regulatingVolume);
-            }
+        _sensor.BorderIsReached += ControlSensorWork;
+    }
+
+    private void ControlSensorWork()
+    {
+        _playing?.Invoke();
+
+        if (_isWork == false)
+        {
+            IEnumerator regulatingVolume = _volumeRegulator.IncreaseVolume();
+            RegulateVolume(true, regulatingVolume);
         }
+        else
+        {
+            IEnumerator regulatingVolume = _volumeRegulator.DecreaseVolume();
+            RegulateVolume(false, regulatingVolume);
+        }
+    }
 
     private void RegulateVolume(bool isWork, IEnumerator changeVolume)
     {
         _isWork = isWork;
-        volumeRegulator.StartCoroutine(changeVolume);
+        _volumeRegulator.StartCoroutine(changeVolume);
     }
 }

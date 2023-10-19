@@ -1,6 +1,9 @@
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
+[RequireComponent (typeof(Signaling))]
+
 public class VolumeRegulator : MonoBehaviour
 {
     private AudioSource _audioSource;
