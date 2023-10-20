@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,11 +11,6 @@ public class Signaling : MonoBehaviour
     private bool _isWork;
     private VolumeRegulator _volumeRegulator;
 
-    public bool GetStatusWork()
-    {
-        return _isWork;
-    }
-
     private void Awake()
     {
         _volumeRegulator = GetComponent<VolumeRegulator>();
@@ -27,25 +21,28 @@ public class Signaling : MonoBehaviour
         _sensor.BorderIsReached += ControlSensorWork;
     }
 
+    public bool GetStatusWork()
+    {
+        return _isWork;
+    }
+
     private void ControlSensorWork()
     {
         _playing?.Invoke();
+        RegulateVolume();
+    }
 
+    private void RegulateVolume()
+    {
         if (_isWork == false)
         {
-            IEnumerator regulatingVolume = _volumeRegulator.IncreaseVolume();
-            RegulateVolume(true, regulatingVolume);
+            _isWork = true;
+            _volumeRegulator.StartCoroutine(_volumeRegulator.IncreaseVolume());
         }
         else
         {
-            IEnumerator regulatingVolume = _volumeRegulator.DecreaseVolume();
-            RegulateVolume(false, regulatingVolume);
+            _isWork = false;
+            _volumeRegulator.StartCoroutine(_volumeRegulator.DecreaseVolume());
         }
-    }
-
-    private void RegulateVolume(bool isWork, IEnumerator changeVolume)
-    {
-        _isWork = isWork;
-        _volumeRegulator.StartCoroutine(changeVolume);
     }
 }

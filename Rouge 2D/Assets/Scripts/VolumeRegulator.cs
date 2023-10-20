@@ -10,6 +10,7 @@ public class VolumeRegulator : MonoBehaviour
     private Signaling _signaling;
     private float _timeDelay;
     private float _countChangeVolume;
+    private float _maxVolume;
 
     private void Start()
     {
@@ -18,13 +19,14 @@ public class VolumeRegulator : MonoBehaviour
         _audioSource.volume = 0;
         _timeDelay = 1;
         _countChangeVolume = 0.1f;
+        _maxVolume = 1;
     }
 
     public IEnumerator IncreaseVolume()
     {
         WaitForSeconds timeDelay = new WaitForSeconds(_timeDelay);
 
-        while (_audioSource.volume < 1)
+        while (_audioSource.volume < _maxVolume)
         {
             if (_signaling.GetStatusWork() == false)
             {
