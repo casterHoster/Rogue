@@ -2,53 +2,30 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
-[RequireComponent (typeof(Signaling))]
+[RequireComponent(typeof(Signaling))]
 
 public class VolumeRegulator : MonoBehaviour
 {
-    private AudioSource _audioSource;
+    [SerializeField] private float _speedChange;
     private Signaling _signaling;
-    private float _timeDelay;
-    private float _countChangeVolume;
+
+    private AudioSource _audioSource;
 
     private void Start()
     {
         _audioSource = GetComponent<AudioSource>();
-        _signaling = GetComponent<Signaling>();
         _audioSource.volume = 0;
-        _timeDelay = 1;
-        _countChangeVolume = 0.1f;
+        _signaling = GetComponent<Signaling>();
     }
 
-    public IEnumerator IncreaseVolume()
+    public IEnumerator ChangeVolume(float targeVolume)
     {
-        WaitForSeconds timeDelay = new WaitForSeconds(_timeDelay);
+        bool isWork = _signaling.GetStatusWork();
 
-        while (_audioSource.volume < 1)
+        while (isWork == _signaling.GetStatusWork())
         {
-            if (_signaling.GetStatusWork() == false)
-            {
-                break;
-            }
-
-            _audioSource.volume += _countChangeVolume;
-            yield return timeDelay;
-        }
-    }
-
-    public IEnumerator DecreaseVolume()
-    {
-        WaitForSeconds timeDelay = new WaitForSeconds(_timeDelay);
-
-        while (_audioSource.volume > 0)
-        {
-            if (_signaling.GetStatusWork() == true)
-            {
-                break;
-            }
-
-            _audioSource.volume -= _countChangeVolume;
-            yield return timeDelay;
+            _audioSource.volume = Mathf.MoveTowards( _audioSource.volume, targeVolume,  _speedChange * Time.deltaTime);
+            yield return null;
         }
     }
 }

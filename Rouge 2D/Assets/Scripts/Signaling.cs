@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,43 +8,41 @@ public class Signaling : MonoBehaviour
     [SerializeField] private UnityEvent _playing;
     [SerializeField] private Sensor _sensor;
 
-    private bool _isWork;
     private VolumeRegulator _volumeRegulator;
+    private float _minVolume;
+    private float _maxVolume;
+    private bool _isWork;
+
+    private void Awake()
+    {
+        _volumeRegulator = GetComponent<VolumeRegulator>();
+        _minVolume = 0;
+        _maxVolume = 1;
+    }
+
+    private void OnEnable()
+    {
+        _sensor.BorderIsReached += RegulateVolume;
+    }
 
     public bool GetStatusWork()
     {
         return _isWork;
     }
 
-    private void Awake()
-    {
-        _volumeRegulator = GetComponent<VolumeRegulator>();
-    }
-
-    private void OnEnable()
-    {
-        _sensor.BorderIsReached += ControlSensorWork;
-    }
-
-    private void ControlSensorWork()
+    private void RegulateVolume()
     {
         _playing?.Invoke();
 
         if (_isWork == false)
         {
-            IEnumerator regulatingVolume = _volumeRegulator.IncreaseVolume();
-            RegulateVolume(true, regulatingVolume);
+            _isWork = true;
+            _volumeRegulator.StartCoroutine(_volumeRegulator.ChangeVolume(_maxVolume));
         }
         else
         {
-            IEnumerator regulatingVolume = _volumeRegulator.DecreaseVolume();
-            RegulateVolume(false, regulatingVolume);
+            _isWork = false;
+            _volumeRegulator.StartCoroutine(_volumeRegulator.ChangeVolume(_minVolume));
         }
-    }
-
-    private void RegulateVolume(bool isWork, IEnumerator changeVolume)
-    {
-        _isWork = isWork;
-        _volumeRegulator.StartCoroutine(changeVolume);
     }
 }
