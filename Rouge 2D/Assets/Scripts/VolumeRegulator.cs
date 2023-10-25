@@ -7,8 +7,8 @@ using UnityEngine;
 public class VolumeRegulator : MonoBehaviour
 {
     [SerializeField] private float _speedChange;
-    private Signaling _signaling;
 
+    private Signaling _signaling;
     private AudioSource _audioSource;
 
     private void Start()
