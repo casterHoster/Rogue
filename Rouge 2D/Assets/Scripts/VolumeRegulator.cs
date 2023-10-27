@@ -20,9 +20,7 @@ public class VolumeRegulator : MonoBehaviour
 
     public IEnumerator ChangeVolume(float targeVolume)
     {
-        bool isWork = _signaling.GetStatusWork();
-
-        while (isWork == _signaling.GetStatusWork())
+        while (_audioSource.volume != targeVolume)
         {
             _audioSource.volume = Mathf.MoveTowards( _audioSource.volume, targeVolume,  _speedChange * Time.deltaTime);
             yield return null;

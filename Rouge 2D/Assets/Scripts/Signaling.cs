@@ -8,6 +8,8 @@ public class Signaling : MonoBehaviour
     [SerializeField] private UnityEvent _playing;
     [SerializeField] private Sensor _sensor;
 
+    private Coroutine _increasingVolume;
+    private Coroutine _decreasingVolume;
     private VolumeRegulator _volumeRegulator;
     private float _minVolume;
     private float _maxVolume;
@@ -25,11 +27,6 @@ public class Signaling : MonoBehaviour
         _sensor.BorderIsReached += RegulateVolume;
     }
 
-    public bool GetStatusWork()
-    {
-        return _isWork;
-    }
-
     private void RegulateVolume()
     {
         _playing?.Invoke();
@@ -37,12 +34,23 @@ public class Signaling : MonoBehaviour
         if (_isWork == false)
         {
             _isWork = true;
-            _volumeRegulator.StartCoroutine(_volumeRegulator.ChangeVolume(_maxVolume));
+            _increasingVolume = StartCoroutine(_volumeRegulator.ChangeVolume(_maxVolume));
+
+            if (_decreasingVolume != null) 
+            {
+                StopCoroutine(_decreasingVolume);
+            }
         }
         else
         {
             _isWork = false;
-            _volumeRegulator.StartCoroutine(_volumeRegulator.ChangeVolume(_minVolume));
+            _decreasingVolume = StartCoroutine(_volumeRegulator.ChangeVolume(_minVolume));
+            StopCoroutine(_increasingVolume);
+
+            if (_increasingVolume != null)
+            {
+                StopCoroutine(_increasingVolume);
+            }
         }
     }
 }
